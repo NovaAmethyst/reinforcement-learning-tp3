@@ -49,7 +49,7 @@ class QLearningAgent:
         """
         value = 0.0
         # BEGIN SOLUTION
-        value = np.max([self.get_value(state,  action) for action in self.legal_actions])
+        value = np.max([self.get_qvalue(state,  action) for action in self.legal_actions])
         # END SOLUTION
         return value
 
