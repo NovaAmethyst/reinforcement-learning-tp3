@@ -25,6 +25,9 @@ from qlearning import QLearningAgent
 from qlearning_eps_scheduling import QLearningAgentEpsScheduling
 from sarsa import SarsaAgent
 
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
 
 env = gym.make("Taxi-v3", render_mode="rgb_array")
 n_actions = env.action_space.n  # type: ignore
@@ -57,6 +60,11 @@ def play_and_train(env: gym.Env, agent: QLearningAgent, t_max=int(1e4)) -> float
 
         # Train agent for state s
         # BEGIN SOLUTION
+        agent.update(s, a, r, next_s)
+        total_reward += r
+        s = next_s
+        if done:
+            break
         # END SOLUTION
 
     return total_reward
@@ -70,6 +78,19 @@ for i in range(1000):
 
 assert np.mean(rewards[-100:]) > 0.0
 # TODO: créer des vidéos de l'agent en action
+fig = plt.figure()
+s, _ = env.reset()
+ims = [[plt.imshow(env.render(), animated=True)]]
+done = False
+while not done:
+    a = agent.get_action(s)
+    s, _, done, _, _ = env.step(a)
+    im = plt.imshow(env.render(), animated=True)
+    ims.append([im])
+
+ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True, repeat_delay=1000)
+plt.show()
+#ani.save("car_1.gif")
 
 #################################################
 # 2. Play with QLearningAgentEpsScheduling

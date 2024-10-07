@@ -66,7 +66,7 @@ class QLearningAgent:
         # BEGIN SOLUTION
         TD_target_s = reward + self.gamma * self.get_value(next_state)
         TD_error_s = TD_target_s - self.get_qvalue(state, action)
-        self.set_qvalue(state, action, self.get_qvalue(state, action) + self.learning_rate * TD_error_s)
+        q_value = self.get_qvalue(state, action) + self.learning_rate * TD_error_s
         # END SOLUTION
 
         self.set_qvalue(state, action, q_value)
@@ -94,7 +94,7 @@ class QLearningAgent:
         """
         action = self.legal_actions[0]
         # BEGIN SOLUTION
-        rand = random.uniform(low=0.0, high=1.0)
+        rand = random.uniform(0.0, 1.0)
         if rand < self.epsilon:
             action = random.choice(list(self.legal_actions))
         else:
