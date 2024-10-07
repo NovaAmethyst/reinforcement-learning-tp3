@@ -49,6 +49,7 @@ class QLearningAgent:
         """
         value = 0.0
         # BEGIN SOLUTION
+        value = np.max([self.get_value(state,  action) for action in self.legal_actions])
         # END SOLUTION
         return value
 
@@ -63,6 +64,9 @@ class QLearningAgent:
         """
         q_value = 0.0
         # BEGIN SOLUTION
+        TD_target_s = reward + self.gamma * self.get_value(next_state)
+        TD_error_s = TD_target_s - self.get_qvalue(state, action)
+        self.set_qvalue(state, action, self.get_qvalue(state, action) + self.learning_rate * TD_error_s)
         # END SOLUTION
 
         self.set_qvalue(state, action, q_value)
@@ -89,8 +93,12 @@ class QLearningAgent:
               and compare it with your probability
         """
         action = self.legal_actions[0]
-
         # BEGIN SOLUTION
+        rand = random.uniform(low=0.0, high=1.0)
+        if rand < self.epsilon:
+            action = random.choice(list(self.legal_actions))
+        else:
+            action = self.get_best_action(state)
         # END SOLUTION
 
         return action
