@@ -62,9 +62,10 @@ class SarsaAgent:
         """
         q_value = 0.0
         # BEGIN SOLUTION
-        TD_target_s = reward + self.gamma * self.get_value(next_state)
+        next_action = self.get_best_action(next_state)
+        TD_target_s = reward + self.gamma * self.get_qvalue(next_state, next_action)#self.get_value(next_state)
         TD_error_s = TD_target_s - self.get_qvalue(state, action)
-        self.set_qvalue(state, action, self.get_qvalue(state, action) + self.alpha * TD_error_s)
+        q_value = self.get_qvalue(state, action) + self.learning_rate * TD_error_s
         # END SOLUTION
 
         self.set_qvalue(state, action, q_value)
@@ -87,6 +88,15 @@ class SarsaAgent:
         action = self.legal_actions[0]
 
         # BEGIN SOLUTION
+        epsilon = 0.25
+        rand = random.uniform(0.0, 1.0)
+        action = self.get_best_action(state)
+        if self.get_qvalue(state, action) <= 1:
+            random_choice_proba = epsilon
+        else:
+            random_choice_proba = epsilon / self.get_qvalue(state, action)
+        if rand < random_choice_proba:
+            action = random.choice(self.legal_actions)
         # END SOLUTION
 
         return action

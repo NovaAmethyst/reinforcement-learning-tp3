@@ -72,25 +72,44 @@ def play_and_train(env: gym.Env, agent: QLearningAgent, t_max=int(1e4)) -> float
 
 rewards = []
 for i in range(1000):
-    rewards.append(play_and_train(env, agent))
+    rewards.append(play_and_train(env, agent, t_max=200))
     if i % 100 == 0:
         print("mean reward", np.mean(rewards[-100:]))
 
 assert np.mean(rewards[-100:]) > 0.0
 # TODO: créer des vidéos de l'agent en action
-fig = plt.figure()
-s, _ = env.reset()
-ims = [[plt.imshow(env.render(), animated=True)]]
-done = False
-while not done:
-    a = agent.get_action(s)
-    s, _, done, _, _ = env.step(a)
-    im = plt.imshow(env.render(), animated=True)
-    ims.append([im])
+def get_animation(env, agent, filepath, t_max=int(1e4), save=False):
+    fig = plt.figure()
+    s, _ = env.reset()
+    ims = [[plt.imshow(env.render(), animated=True)]]
+    for _ in range(t_max):
+        a = agent.get_best_action(s)
+        s, _, done, _, _ = env.step(a)
+        im = plt.imshow(env.render(), animated=True)
+        ims.append([im])
+        if done:
+            break
 
-ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True, repeat_delay=1000)
-plt.show()
-#ani.save("car_1.gif")
+    ani = animation.ArtistAnimation(fig, ims, interval=500, blit=True, repeat_delay=1000)
+    if save:
+        ani.save(filepath)
+    else:
+        plt.show()
+
+def get_graph(x, y, title, x_label, y_label, filepath, save=False):
+    fig, ax = plt.subplots(nrows=1, ncols=1)
+    ax.scatter(x, y, s=2 )
+    ax.set_title(title)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    if save:
+        fig.savefig(filepath)
+    else:
+        plt.show()
+
+x = np.arange(0, 1000)
+get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_1/learning_reward.png", save=True)
+get_animation(env, agent, "figures/part_1/final_game_animation.gif", t_max=200, save=True)
 
 #################################################
 # 2. Play with QLearningAgentEpsScheduling
@@ -110,7 +129,8 @@ for i in range(1000):
 assert np.mean(rewards[-100:]) > 0.0
 
 # TODO: créer des vidéos de l'agent en action
-
+get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_2/learning_reward.png", save=True)
+get_animation(env, agent, "figures/part_2/final_game_animation.gif", t_max=200, save=True)
 
 ####################
 # 3. Play with SARSA
@@ -124,3 +144,7 @@ for i in range(1000):
     rewards.append(play_and_train(env, agent))
     if i % 100 == 0:
         print("mean reward", np.mean(rewards[-100:]))
+
+assert np.mean(rewards[-100:]) > 0.0
+get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_3/learning_reward.png", save=True)
+get_animation(env, agent, "figures/part_3/final_game_animation.gif", t_max=200, save=True)
