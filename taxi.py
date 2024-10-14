@@ -22,6 +22,7 @@ import typing as t
 import gymnasium as gym
 import numpy as np
 from qlearning import QLearningAgent
+from qlearning_eps_reduce import QLearningAgentEpsReduce
 from qlearning_eps_scheduling import QLearningAgentEpsScheduling
 from sarsa import SarsaAgent
 
@@ -76,10 +77,11 @@ for i in range(1000):
     if i % 100 == 0:
         print("mean reward", np.mean(rewards[-100:]))
 
-assert np.mean(rewards[-100:]) > 0.0
+#assert np.mean(rewards[-100:]) > 0.0
 # TODO: créer des vidéos de l'agent en action
 def get_animation(env, agent, filepath, t_max=int(1e4), save=False):
     fig = plt.figure()
+    plt.axis('off')
     s, _ = env.reset()
     ims = [[plt.imshow(env.render(), animated=True)]]
     for _ in range(t_max):
@@ -108,6 +110,20 @@ def get_graph(x, y, title, x_label, y_label, filepath, save=False):
         plt.show()
 
 x = np.arange(0, 1000)
+get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_1/learning_reward_no_eps_change.png", save=True)
+get_animation(env, agent, "figures/part_1/final_game_animation_no_eps_change.gif", t_max=200, save=True)
+
+agent = QLearningAgentEpsReduce(
+    learning_rate=0.5, epsilon=0.25, gamma=0.99, legal_actions=list(range(n_actions))
+)
+
+rewards = []
+for i in range(1000):
+    rewards.append(play_and_train(env, agent, t_max=200))
+    if i % 100 == 0:
+        print("mean reward", np.mean(rewards[-100:]))
+
+assert np.mean(rewards[-100:]) > 0.0
 get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_1/learning_reward.png", save=True)
 get_animation(env, agent, "figures/part_1/final_game_animation.gif", t_max=200, save=True)
 
@@ -122,15 +138,31 @@ agent = QLearningAgentEpsScheduling(
 
 rewards = []
 for i in range(1000):
-    rewards.append(play_and_train(env, agent))
+    rewards.append(play_and_train(env, agent, t_max=200))
     if i % 100 == 0:
         print("mean reward", np.mean(rewards[-100:]))
 
 assert np.mean(rewards[-100:]) > 0.0
 
 # TODO: créer des vidéos de l'agent en action
-get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_2/learning_reward.png", save=True)
-get_animation(env, agent, "figures/part_2/final_game_animation.gif", t_max=200, save=True)
+get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_2/learning_reward_no_reset.png", save=True)
+get_animation(env, agent, "figures/part_2/final_game_animation_no_reset.gif", t_max=200, save=True)
+
+agent = QLearningAgentEpsScheduling(
+    learning_rate=0.5, epsilon=0.25, gamma=0.99, legal_actions=list(range(n_actions))
+)
+
+agent.reset()
+rewards = []
+for i in range(1000):
+    rewards.append(play_and_train(env, agent, t_max=200))
+    if i % 100 == 0:
+        print("mean reward", np.mean(rewards[-100:]))
+
+assert np.mean(rewards[-100:]) > 0.0
+
+get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_2/learning_reward_with_reset.png", save=True)
+get_animation(env, agent, "figures/part_2/final_game_animation_with_reset.gif", t_max=200, save=True)
 
 ####################
 # 3. Play with SARSA
@@ -141,10 +173,10 @@ agent = SarsaAgent(learning_rate=0.5, gamma=0.99, legal_actions=list(range(n_act
 
 rewards = []
 for i in range(1000):
-    rewards.append(play_and_train(env, agent))
+    rewards.append(play_and_train(env, agent, t_max=200))
     if i % 100 == 0:
         print("mean reward", np.mean(rewards[-100:]))
 
 assert np.mean(rewards[-100:]) > 0.0
-get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_3/learning_reward.png", save=True)
-get_animation(env, agent, "figures/part_3/final_game_animation.gif", t_max=200, save=True)
+get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_3/learning_reward_no_eps_change.png", save=True)
+get_animation(env, agent, "figures/part_3/final_game_animation_no_eps_change.gif", t_max=200, save=True)

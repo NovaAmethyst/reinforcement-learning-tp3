@@ -88,15 +88,7 @@ class SarsaAgent:
         action = self.legal_actions[0]
 
         # BEGIN SOLUTION
-        epsilon = 0.25
-        rand = random.uniform(0.0, 1.0)
         action = self.get_best_action(state)
-        if self.get_qvalue(state, action) <= 1:
-            random_choice_proba = epsilon
-        else:
-            random_choice_proba = epsilon / self.get_qvalue(state, action)
-        if rand < random_choice_proba:
-            action = random.choice(self.legal_actions)
         # END SOLUTION
 
         return action
