@@ -120,6 +120,9 @@ def get_graph(x, y, title, x_label, y_label, filepath, save=False, use_line=Fals
 
 x = np.arange(0, 1000)
 get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_1/learning_reward_base_qlearning.png", save=True)
+final_rewards = []
+
+final_rewards.append(np.mean(rewards[-100:]))
 
 # Seek hyper parameter epsilon
 epsilons = np.arange(0, 0.5, 0.05)
@@ -171,6 +174,10 @@ assert np.mean(rewards[-100:]) > 0.0
 get_animation(env, agent, f"animations/qlearning/optimized_qlearning.gif", t_max=200, save=True)
 get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_1/learning_reward_optimized_qlearning.png", save=True)
 
+eps_qlearning = final_epsilon
+alph_qlearning = final_alpha
+final_rewards.append(np.mean(rewards[-100:]))
+
 #################################################
 # 2. Play with QLearningAgentEpsScheduling
 #################################################
@@ -189,6 +196,8 @@ for i in range(1000):
         get_animation(env, agent, f"animations/qlearning_eps_schedule/training/base/base_qlearning_eps_schedule_iteration_{i + 1}.gif", t_max=200, save=True)
 
 assert np.mean(rewards[-100:]) > 0.0
+
+final_rewards.append(np.mean(rewards[-100:]))
 
 # TODO: créer des vidéos de l'agent en action
 get_animation(env, agent, f"animations/qlearning_eps_schedule/base_qlearning_eps_schedule.gif", t_max=200, save=True)
@@ -245,6 +254,10 @@ assert np.mean(rewards[-100:]) > 0.0
 get_animation(env, agent, f"animations/qlearning_eps_schedule/optimized_qlearning.gif", t_max=200, save=True)
 get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_2/learning_reward_optimized_qlearning_eps_schedule.png", save=True)
 
+eps_qlearning_scheduling = final_epsilon
+alph_qlearning_scheduling = final_alpha
+final_rewards.append(np.mean(rewards[-100:]))
+
 ####################
 # 3. Play with SARSA
 ####################
@@ -261,6 +274,7 @@ for i in range(1000):
         get_animation(env, agent, f"animations/sarsa/training/base/base_sarsa_iteration_{i + 1}.gif", t_max=200, save=True)
 
 assert np.mean(rewards[-100:]) > 0.0
+final_rewards.append(np.mean(rewards[-100:]))
 get_animation(env, agent, f"animations/sarsa/base_sarsa.gif", t_max=200, save=True)
 get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_3/learning_reward_base_sarsa.png", save=True)
 
@@ -293,5 +307,11 @@ for i in range(1000):
 
 assert np.mean(rewards[-100:]) > 0.0
 
+final_rewards.append(np.mean(rewards[-100:]))
 get_animation(env, agent, f"animations/sarsa/optimized_sarsa.gif", t_max=200, save=True)
 get_graph(x, rewards, "Reward per learning iteration", "Learning iteration", "Reward", "figures/part_3/learning_reward_optimized_sarsa.png", save=True)
+
+print(f"QLearning parameters: epsilon = {eps_qlearning}, alpha = {alph_qlearning}")
+print(f"QLearning with epsilon scheduling parameters: starting epsilon = {eps_qlearning_scheduling}, alpha = {alph_qlearning_scheduling}")
+print(f"Sarsa parameters: alpha = {final_alpha}")
+print(f"List of all results: {final_rewards}")
